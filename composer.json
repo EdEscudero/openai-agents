@@ -1,0 +1,35 @@
+{
+    "name": "openai/laravel-agents",
+    "description": "OpenAI Agents SDK for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "illuminate/support": "^12.0",
+        "openai-php/client": "^0.6",
+        "symfony/http-client": "^7.3",
+        "nyholm/psr7": "^1.8" 
+    },
+    "autoload": {
+        "psr-4": {
+            "OpenAI\\LaravelAgents\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "OpenAI\\LaravelAgents\\AgentServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "OpenAI"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
