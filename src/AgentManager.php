@@ -26,7 +26,7 @@ class AgentManager
     {
         $options = array_replace_recursive($this->config['default'] ?? [], $options);
 
-        $client = OpenAIClient::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
+        $client = OpenAIClient::factory()->withApiKey($this->config['api_key'])->make();
 
         return new Agent($client, $options);
     }

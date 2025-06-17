@@ -16,7 +16,7 @@ Publish the configuration file:
 php artisan vendor:publish --tag=config --provider="OpenAI\\LaravelAgents\\AgentServiceProvider"
 ```
 
-Set your `OPENAI_API_KEY` in the environment file.
+Set your `OPENAI_API_KEY` in the environment file or edit `config/agents.php`.
 
 ## Usage
 
