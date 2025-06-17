@@ -35,6 +35,28 @@ $manager = app(AgentManager::class);
 $response = $manager->agent()->chat('Hello world');
 ```
 
+The returned `Agent` instance retains the conversation history, allowing for multi-turn chats:
+
+```php
+$agent = $manager->agent();
+
+// First user message
+$agent->chat('Hello');
+
+// Follow-up message uses previous context
+$reply = $agent->chat('What did I just say?');
+```
+
+You can optionally provide a system prompt when constructing the agent:
+
+```php
+use OpenAI\LaravelAgents\Agent;
+use OpenAI\Client as OpenAIClient;
+
+$client = OpenAIClient::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
+$agent = new Agent($client, [], 'You are a helpful assistant.');
+```
+
 ## Configuration
 
 The `config/agents.php` file allows you to customize the default model and parameters used when interacting with OpenAI.
