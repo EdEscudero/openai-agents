@@ -16,10 +16,18 @@ class Agent
      */
     protected array $options = [];
 
-    public function __construct(ClientContract $client, array $options = [])
+    /**
+     * Stored conversation messages.
+     */
+    protected array $messages = [];
+
+    public function __construct(ClientContract $client, array $options = [], ?string $systemPrompt = null)
     {
         $this->client = $client;
         $this->options = $options;
+        if ($systemPrompt !== null) {
+            $this->messages[] = ['role' => 'system', 'content' => $systemPrompt];
+        }
     }
 
     /**
@@ -27,15 +35,21 @@ class Agent
      */
     public function chat(string $message): string
     {
+        $this->messages[] = ['role' => 'user', 'content' => $message];
+
         $response = $this->client->chat()->create([
             'model' => $this->options['model'] ?? 'gpt-4o',
-            'messages' => [
-                ['role' => 'user', 'content' => $message],
-            ],
+            'messages' => $this->messages,
             'temperature' => $this->options['temperature'] ?? null,
             'top_p' => $this->options['top_p'] ?? null,
         ]);
 
-        return $response['choices'][0]['message']['content'] ?? '';
+        $reply = $response['choices'][0]['message']['content'] ?? '';
+
+        if ($reply !== '') {
+            $this->messages[] = ['role' => 'assistant', 'content' => $reply];
+        }
+
+        return $reply;
     }
 }
