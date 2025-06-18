@@ -2,7 +2,6 @@
 
 This package provides a lightweight integration of the [OpenAI PHP client](https://github.com/openai-php/client) with Laravel 12, inspired by the [OpenAI Agents Python SDK](https://github.com/openai/openai-agents-python).
 
-> **Note**: This is a minimal starting point and does not yet implement all features of the official Python SDK.
 
 ## Installation
 
