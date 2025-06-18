@@ -21,13 +21,20 @@ class Agent
      */
     protected array $messages = [];
 
-    public function __construct(ClientContract $client, array $options = [], ?string $systemPrompt = null)
+    /**
+     * Optional expected output type schema or class name.
+     */
+    protected $outputType = null;
+
+    public function __construct(ClientContract $client, array $options = [], ?string $systemPrompt = null, $outputType = null)
     {
         $this->client = $client;
         $this->options = $options;
         if ($systemPrompt !== null) {
             $this->messages[] = ['role' => 'system', 'content' => $systemPrompt];
         }
+
+        $this->outputType = $outputType;
     }
 
     /**
@@ -38,26 +45,40 @@ class Agent
         return $this->client;
     }
 
+    public function getOutputType()
+    {
+        return $this->outputType;
+    }
+
     /**
      * Send a message to the agent and get a response.
      */
-    public function chat(string $message): string
+    public function chat(string $message, array $tools = []): array
     {
         $this->messages[] = ['role' => 'user', 'content' => $message];
 
-        $response = $this->client->chat()->create([
+        $params = [
             'model' => $this->options['model'] ?? 'gpt-4o',
             'messages' => $this->messages,
             'temperature' => $this->options['temperature'] ?? null,
             'top_p' => $this->options['top_p'] ?? null,
-        ]);
+        ];
 
-        $reply = $response['choices'][0]['message']['content'] ?? '';
-
-        if ($reply !== '') {
-            $this->messages[] = ['role' => 'assistant', 'content' => $reply];
+        if ($tools !== []) {
+            $params['tools'] = $tools;
+            $params['tool_choice'] = 'auto';
         }
 
-        return $reply;
+        $response = $this->client->chat()->create($params);
+
+        $messageData = $response['choices'][0]['message'];
+
+        if (isset($messageData['content']) && $messageData['content'] !== '') {
+            $this->messages[] = ['role' => 'assistant', 'content' => $messageData['content']];
+        } elseif (isset($messageData['tool_calls'])) {
+            $this->messages[] = ['role' => 'assistant', 'tool_calls' => $messageData['tool_calls']];
+        }
+
+        return $messageData;
     }
 }

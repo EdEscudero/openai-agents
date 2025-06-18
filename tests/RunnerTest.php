@@ -47,4 +47,45 @@ class RunnerTest extends TestCase
 
         $this->assertSame('[[tool:unknown]]', $result);
     }
+
+    public function test_function_tool_and_structured_output()
+    {
+        $chat = $this->createMock(ChatContract::class);
+        $chat->expects($this->exactly(2))
+            ->method('create')
+            ->willReturnOnConsecutiveCalls(
+                [
+                    'choices' => [
+                        ['message' => [
+                            'tool_calls' => [[
+                                'function' => [
+                                    'name' => 'echo',
+                                    'arguments' => '{"text":"hi"}'
+                                ]
+                            ]]
+                        ]]
+                    ]
+                ],
+                [
+                    'choices' => [
+                        ['message' => ['content' => '{"answer":"done"}']]
+                    ]
+                ]
+            );
+
+        $client = $this->createMock(ClientContract::class);
+        $client->method('chat')->willReturn($chat);
+
+        $agent = new Agent($client);
+        $runner = new Runner($agent, 3, outputType: 'array');
+        $runner->registerFunctionTool('echo', fn($args) => strtoupper($args['text']), [
+            'type' => 'object',
+            'properties' => ['text' => ['type' => 'string']],
+            'required' => ['text'],
+        ]);
+
+        $result = $runner->run('start');
+
+        $this->assertSame('{"answer":"done"}', $result);
+    }
 }

@@ -75,6 +75,24 @@ $runner->registerTool('echo', fn($text) => $text);
 $reply = $runner->run('Start');
 ```
 
+### Structured output & typed tools
+
+`Runner` and `Agent` can be given an expected output schema or class name via the
+`$outputType` argument. When provided, `run()` will keep looping until the model
+returns JSON that matches the schema.
+
+You can register function tools that make use of OpenAI's function calling:
+
+```php
+$runner = new Runner($agent, outputType: 'array');
+$runner->registerFunctionTool('search', fn($args) => ['result' => 'ok'], [
+    'type' => 'object',
+    'properties' => ['query' => ['type' => 'string']],
+    'required' => ['query'],
+]);
+$reply = $runner->run('Start');
+```
+
 ## Configuration
 
 The `config/agents.php` file allows you to customize the default model and parameters used when interacting with OpenAI.

@@ -32,6 +32,6 @@ class AgentChatTest extends TestCase
 
         $reply = $agent->chat('Hello');
 
-        $this->assertSame('Hi there', $reply);
+        $this->assertSame('Hi there', $reply['content']);
     }
 }
