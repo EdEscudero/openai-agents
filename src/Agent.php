@@ -21,10 +21,16 @@ class Agent
      */
     protected array $messages = [];
 
-    public function __construct(ClientContract $client, array $options = [], ?string $systemPrompt = null)
+    /**
+     * Optional output type/schema to request from the model.
+     */
+    protected $outputType = null;
+
+    public function __construct(ClientContract $client, array $options = [], ?string $systemPrompt = null, $outputType = null)
     {
         $this->client = $client;
         $this->options = $options;
+        $this->outputType = $outputType;
         if ($systemPrompt !== null) {
             $this->messages[] = ['role' => 'system', 'content' => $systemPrompt];
         }
@@ -41,16 +47,36 @@ class Agent
     /**
      * Send a message to the agent and get a response.
      */
-    public function chat(string $message): string
+    public function chat(string $message, array $toolDefinitions = [], $outputType = null): string
     {
         $this->messages[] = ['role' => 'user', 'content' => $message];
 
-        $response = $this->client->chat()->create([
+        $params = [
             'model' => $this->options['model'] ?? 'gpt-4o',
             'messages' => $this->messages,
             'temperature' => $this->options['temperature'] ?? null,
             'top_p' => $this->options['top_p'] ?? null,
-        ]);
+        ];
+
+        if (!empty($toolDefinitions)) {
+            $params['tools'] = array_map(function (array $tool) {
+                return [
+                    'type' => 'function',
+                    'function' => [
+                        'name' => $tool['name'],
+                        'parameters' => $tool['schema'],
+                    ],
+                ];
+            }, $toolDefinitions);
+            $params['tool_choice'] = 'auto';
+        }
+
+        $outputType = $outputType ?? $this->outputType;
+        if ($outputType !== null) {
+            $params['response_format'] = ['type' => 'json_object'];
+        }
+
+        $response = $this->client->chat()->create($params);
 
         $reply = $response['choices'][0]['message']['content'] ?? '';
 

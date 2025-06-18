@@ -75,6 +75,24 @@ $runner->registerTool('echo', fn($text) => $text);
 $reply = $runner->run('Start');
 ```
 
+The runner can request structured JSON output by providing an output schema:
+
+```php
+$schema = ['required' => ['done']];
+$runner = new Runner($agent, maxTurns: 3, tracer: null, outputType: $schema);
+$result = $runner->run('Start'); // returns an associative array
+```
+
+Tools may also be defined with JSON schemas for OpenAI function calling:
+
+```php
+$runner->registerFunctionTool('echo', fn(array $args) => $args['text'], [
+    'type' => 'object',
+    'properties' => ['text' => ['type' => 'string']],
+    'required' => ['text'],
+]);
+```
+
 ### Tracing
 
 The package includes a simple tracing system that lets you observe each turn
