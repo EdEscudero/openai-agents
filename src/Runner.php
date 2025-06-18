@@ -78,6 +78,7 @@ class Runner
         $this->outputGuardrails[] = $guard;
     }
 
+    /** @return string|array */
     public function run(string $message): string|array
     {
         $spanId = $this->tracer?->startSpan('runner', ['max_turns' => $this->maxTurns]);
