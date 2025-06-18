@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Guía del Package Laravel Agents</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .image-container { text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>OpenAI Agents para Laravel</h1>
+    <p>
+        Esta página explica los conceptos teóricos, la implementación en código y diversos casos de uso del paquete <code>openai/laravel-agents</code>.
+    </p>
+
+    <h2>Conceptos teóricos</h2>
+    <ul>
+        <li><strong>Agente</strong>: una clase que mantiene el historial de la conversación y permite interactuar con la API de OpenAI.</li>
+        <li><strong>Runner</strong>: orquestador que controla las interacciones, las herramientas y los cambios de agente.</li>
+        <li><strong>Herramientas</strong>: funciones adicionales que el agente puede invocar para cumplir mejor la tarea.</li>
+        <li><strong>Pipeline de voz</strong>: combinación de transcripción de audio y sintetización de texto a voz.</li>
+    </ul>
+
+    <div class="image-container">
+        <svg width="200" height="120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="180" height="100" fill="#f44336" rx="15"/>
+            <text x="100" y="70" fill="white" font-size="20" text-anchor="middle" font-family="Arial">Laravel</text>
+        </svg>
+        <p>Figura 1: Imagen ilustrativa del ecosistema Laravel</p>
+    </div>
+
+    <h2>Instalación</h2>
+    <p>Para instalar el paquete, ejecute:</p>
+    <pre><code>composer require openai/laravel-agents
+php artisan vendor:publish --tag=config --provider="OpenAI\LaravelAgents\AgentServiceProvider"</code></pre>
+
+    <h2>Ejemplo básico de uso</h2>
+    <pre><code>&lt;?php
+use OpenAI\LaravelAgents\AgentManager;
+
+$manager = app(AgentManager::class);
+$reply = $manager-&gt;agent()-&gt;chat('Hola mundo');
+    </code></pre>
+
+    <h2>Tabla de características</h2>
+    <table>
+        <thead>
+            <tr><th>Característica</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Conversaciones multi-turno</td><td>El agente conserva el historial de mensajes para proveer contexto.</td></tr>
+            <tr><td>Integración con herramientas</td><td>Permite registrar funciones o agentes auxiliares.</td></tr>
+            <tr><td>Salida estructurada</td><td>Soporta solicitar respuestas en formato JSON.</td></tr>
+            <tr><td>Pipeline de voz</td><td>Facilita la transcripción y generación de audio.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Casos de uso</h2>
+    <ol>
+        <li><strong>Chatbots personalizados</strong>: crear asistentes conversacionales que mantengan contexto y llamen herramientas.
+            <pre><code>&lt;?php
+$runner = new Runner($manager-&gt;agent());
+$runner-&gt;registerTool('echo', fn($text) =&gt; $text);
+$response = $runner-&gt;run('Hola');
+            </code></pre>
+        </li>
+        <li><strong>Aplicaciones por voz</strong>: utilizar el pipeline de voz para recibir audio y responder con voz.
+            <pre><code>&lt;?php
+$pipeline = new VoicePipeline($client, $manager-&gt;agent());
+$audio = $pipeline-&gt;run('input.wav');
+file_put_contents('respuesta.mp3', $audio);
+            </code></pre>
+        </li>
+        <li><strong>Automatización de tareas</strong>: registrar funciones que interactúan con sistemas externos.</li>
+    </ol>
+
+    <p>
+        Consulte el archivo <code>README.md</code> para más detalles y la configuración avanzada.
+    </p>
+</body>
+</html>
