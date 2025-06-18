@@ -75,6 +75,34 @@ $runner->registerTool('echo', fn($text) => $text);
 $reply = $runner->run('Start');
 ```
 
+### Guardrails
+
+Guardrails let you validate input and output during a run. They can transform
+the content or throw an exception to stop execution.
+
+```php
+use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
+use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
+use OpenAI\LaravelAgents\Guardrails\OutputGuardrailException;
+
+$runner->addInputGuardrail(new class extends InputGuardrail {
+    public function validate(string $content): string
+    {
+        return strtoupper($content);
+    }
+});
+
+$runner->addOutputGuardrail(new class extends OutputGuardrail {
+    public function validate(string $content): string
+    {
+        if (str_contains($content, 'bad')) {
+            throw new OutputGuardrailException('Bad content');
+        }
+        return $content;
+    }
+});
+```
+
 ## Configuration
 
 The `config/agents.php` file allows you to customize the default model and parameters used when interacting with OpenAI.
