@@ -5,8 +5,13 @@ namespace OpenAI\Contracts {
         public function create(array $parameters);
     }
 
+    interface AudioContract {
+        public function speech(array $parameters);
+    }
+
     interface ClientContract {
         public function chat(): ChatContract;
+        public function audio(): AudioContract;
     }
 }
 

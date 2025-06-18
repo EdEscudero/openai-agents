@@ -12,6 +12,7 @@ class Runner
     protected Agent $agent;
     protected int $maxTurns;
     protected array $tools = [];
+    protected array $namedAgents = [];
     protected $outputType = null;
     protected array $inputGuardrails = [];
     protected array $outputGuardrails = [];
@@ -39,6 +40,33 @@ class Runner
         ];
     }
 
+    public function registerAutoFunctionTool(string $name, callable $fn): void
+    {
+        $ref = new \ReflectionFunction($fn);
+        $schema = ['type' => 'object', 'properties' => [], 'required' => []];
+        foreach ($ref->getParameters() as $param) {
+            $type = 'string';
+            if ($param->hasType()) {
+                $map = ['int' => 'integer', 'float' => 'number', 'bool' => 'boolean'];
+                $t = $param->getType()->getName();
+                $type = $map[$t] ?? 'string';
+            }
+            $schema['properties'][$param->getName()] = ['type' => $type];
+            if (!$param->isOptional()) {
+                $schema['required'][] = $param->getName();
+            }
+        }
+        if (empty($schema['required'])) {
+            unset($schema['required']);
+        }
+        $this->registerFunctionTool($name, $fn, $schema);
+    }
+
+    public function registerAgent(string $name, Agent $agent): void
+    {
+        $this->namedAgents[$name] = $agent;
+    }
+
     public function addInputGuardrail(InputGuardrail $guard): void
     {
         $this->inputGuardrails[] = $guard;
@@ -49,7 +77,7 @@ class Runner
         $this->outputGuardrails[] = $guard;
     }
 
-    public function run(string $message): string
+    public function run(string $message): string|array
     {
         $spanId = $this->tracer?->startSpan('runner', ['max_turns' => $this->maxTurns]);
         $turn = 0;
@@ -106,8 +134,12 @@ class Runner
             }
 
             if (preg_match('/\[\[handoff:(.+)\]\]/', $response, $m)) {
-                $prompt = $m[1];
-                $this->agent = new Agent($this->agent->getClient(), [], $prompt);
+                $target = trim($m[1]);
+                if (isset($this->namedAgents[$target])) {
+                    $this->agent = $this->namedAgents[$target];
+                } else {
+                    $this->agent = new Agent($this->agent->getClient(), [], $target);
+                }
                 $input = '';
                 $turn++;
                 continue;
@@ -127,6 +159,13 @@ class Runner
             return json_decode($response, true);
         }
         return $response;
+    }
+
+    public function runAsync(string $message): \Fiber
+    {
+        return new \Fiber(function () use ($message) {
+            return $this->run($message);
+        });
     }
 
     protected function outputMatches(string $content): bool

@@ -53,6 +53,13 @@ $agent->chat('Hello');
 $reply = $agent->chat('What did I just say?');
 ```
 
+The agent can also convert text responses to speech:
+
+```php
+$audio = $agent->speak('Hello world');
+file_put_contents('output.mp3', $audio);
+```
+
 You can optionally provide a system prompt when constructing the agent:
 
 ```php
@@ -72,7 +79,10 @@ use OpenAI\LaravelAgents\Runner;
 
 $runner = new Runner($agent, maxTurns: 3);
 $runner->registerTool('echo', fn($text) => $text);
+$helper = new Agent($client, [], 'Espanol agente');
+$runner->registerAgent('spanish', $helper);
 $reply = $runner->run('Start');
+// inside the conversation use [[handoff:spanish]] to switch
 ```
 
 The runner can request structured JSON output by providing an output schema:
@@ -91,6 +101,19 @@ $runner->registerFunctionTool('echo', fn(array $args) => $args['text'], [
     'properties' => ['text' => ['type' => 'string']],
     'required' => ['text'],
 ]);
+
+// Or let the runner derive the schema automatically
+$runner->registerAutoFunctionTool('echo_auto', function (string $text) {
+    return $text;
+});
+```
+
+If you need non-blocking execution you can run the runner inside a PHP `Fiber`:
+
+```php
+$fiber = $runner->runAsync('Hello');
+$fiber->start();
+$result = $fiber->getReturn();
 ```
 
 ### Tracing
@@ -106,6 +129,7 @@ return [
         'enabled' => true,
         'processors' => [
             fn(array $record) => logger()->info('agent trace', $record),
+            new \OpenAI\LaravelAgents\Tracing\HttpProcessor('https://example.com/trace'),
         ],
     ],
 ];

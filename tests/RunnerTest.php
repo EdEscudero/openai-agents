@@ -95,4 +95,47 @@ class RunnerTest extends TestCase
 
         $this->assertSame('Done', $result);
     }
+
+    public function test_runner_handles_named_handoff()
+    {
+        $chat = $this->createMock(ChatContract::class);
+        $chat->expects($this->exactly(2))
+            ->method('create')
+            ->willReturnOnConsecutiveCalls(
+                ['choices' => [['message' => ['content' => '[[handoff:helper]]']]]],
+                ['choices' => [['message' => ['content' => 'final']]]]
+            );
+
+        $client = $this->createMock(ClientContract::class);
+        $client->method('chat')->willReturn($chat);
+
+        $agent = new Agent($client);
+        $helper = new Agent($client);
+        $runner = new Runner($agent, 3);
+        $runner->registerAgent('helper', $helper);
+
+        $result = $runner->run('start');
+
+        $this->assertSame('final', $result);
+    }
+
+    public function test_runner_run_async()
+    {
+        $chat = $this->createMock(ChatContract::class);
+        $chat->expects($this->once())
+            ->method('create')
+            ->willReturn(['choices' => [['message' => ['content' => 'ok']]]]);
+
+        $client = $this->createMock(ClientContract::class);
+        $client->method('chat')->willReturn($chat);
+
+        $agent = new Agent($client);
+        $runner = new Runner($agent, 3);
+
+        $fiber = $runner->runAsync('start');
+        $fiber->start();
+        $result = $fiber->getReturn();
+
+        $this->assertSame('ok', $result);
+    }
 }
