@@ -26,6 +26,12 @@ Send a message to the default agent:
 php artisan agent:chat "Hello"
 ```
 
+You can control the number of turns or provide a system prompt using options:
+
+```bash
+php artisan agent:chat "Hello" --system="You are helpful" --max-turns=3
+```
+
 You can also resolve the `AgentManager` service from the container to create agents programmatically.
 
 ```php
@@ -55,6 +61,18 @@ use OpenAI\Client as OpenAIClient;
 
 $client = OpenAIClient::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
 $agent = new Agent($client, [], 'You are a helpful assistant.');
+```
+
+For more advanced scenarios you can use the `Runner` class which loops until the
+agent returns a final response or a turn limit is reached. Tools and basic handoffs
+can be registered on the runner:
+
+```php
+use OpenAI\LaravelAgents\Runner;
+
+$runner = new Runner($agent, maxTurns: 3);
+$runner->registerTool('echo', fn($text) => $text);
+$reply = $runner->run('Start');
 ```
 
 ## Configuration

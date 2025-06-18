@@ -31,6 +31,14 @@ class Agent
     }
 
     /**
+     * Get the underlying OpenAI client instance.
+     */
+    public function getClient(): ClientContract
+    {
+        return $this->client;
+    }
+
+    /**
      * Send a message to the agent and get a response.
      */
     public function chat(string $message): string
