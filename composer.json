@@ -27,6 +27,9 @@
             "name": "OpenAI"
         }
     ],
+    "scripts": {
+        "test": "phpunit --configuration tests/phpunit.xml"
+    },
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
