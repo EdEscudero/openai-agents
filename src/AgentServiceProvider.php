@@ -3,6 +3,7 @@
 namespace OpenAI\LaravelAgents;
 
 use Illuminate\Support\ServiceProvider;
+use OpenAI\LaravelAgents\Tracing\Tracing;
 
 class AgentServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,14 @@ class AgentServiceProvider extends ServiceProvider
 
         $this->app->singleton(AgentManager::class, function ($app) {
             return new AgentManager($app['config']['agents']);
+        });
+
+        $this->app->singleton(Tracing::class, function ($app) {
+            $config = $app['config']['agents.tracing'];
+            if (!($config['enabled'] ?? false)) {
+                return new Tracing();
+            }
+            return new Tracing($config['processors'] ?? []);
         });
     }
 }

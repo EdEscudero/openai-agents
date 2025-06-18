@@ -75,6 +75,27 @@ $runner->registerTool('echo', fn($text) => $text);
 $reply = $runner->run('Start');
 ```
 
+### Tracing
+
+The package includes a simple tracing system that lets you observe each turn
+of a `Runner` execution. Enable tracing in `config/agents.php` and register one
+or more processors to handle trace records:
+
+```php
+return [
+    // ...
+    'tracing' => [
+        'enabled' => true,
+        'processors' => [
+            fn(array $record) => logger()->info('agent trace', $record),
+        ],
+    ],
+];
+```
+
+When enabled, each call to `Runner::run()` will emit start and end span events
+as well as per-turn events containing the input and output.
+
 ### Guardrails
 
 Guardrails let you validate input and output during a run. They can transform
@@ -105,7 +126,7 @@ $runner->addOutputGuardrail(new class extends OutputGuardrail {
 
 ## Configuration
 
-The `config/agents.php` file allows you to customize the default model and parameters used when interacting with OpenAI.
+The `config/agents.php` file allows you to customize the default model and parameters used when interacting with OpenAI. It also contains options to enable tracing and provide custom processors for handling trace data.
 
 ## License
 
