@@ -2,13 +2,17 @@
 
 namespace OpenAI\LaravelAgents;
 
+use OpenAI\LaravelAgents\Guardrails\GuardrailException;
+use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
+use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
+
 class Runner
 {
     protected Agent $agent;
     protected int $maxTurns;
     protected array $tools = [];
-    protected array $inputGuards = [];
-    protected array $outputGuards = [];
+    protected array $inputGuardrails = [];
+    protected array $outputGuardrails = [];
     protected $tracer;
 
     public function __construct(Agent $agent, int $maxTurns = 5, ?callable $tracer = null)
@@ -23,14 +27,14 @@ class Runner
         $this->tools[$name] = $callback;
     }
 
-    public function addInputGuard(callable $guard): void
+    public function addInputGuardrail(InputGuardrail $guard): void
     {
-        $this->inputGuards[] = $guard;
+        $this->inputGuardrails[] = $guard;
     }
 
-    public function addOutputGuard(callable $guard): void
+    public function addOutputGuardrail(OutputGuardrail $guard): void
     {
-        $this->outputGuards[] = $guard;
+        $this->outputGuardrails[] = $guard;
     }
 
     public function run(string $message): string
@@ -39,14 +43,34 @@ class Runner
         $input = $message;
         $response = '';
         while ($turn < $this->maxTurns) {
-            foreach ($this->inputGuards as $guard) {
-                $input = $guard($input);
+            foreach ($this->inputGuardrails as $guard) {
+                try {
+                    $input = $guard->validate($input);
+                } catch (GuardrailException $e) {
+                    if ($this->tracer) {
+                        ($this->tracer)([
+                            'turn' => $turn + 1,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                    throw $e;
+                }
             }
 
             $response = $this->agent->chat($input);
 
-            foreach ($this->outputGuards as $guard) {
-                $response = $guard($response);
+            foreach ($this->outputGuardrails as $guard) {
+                try {
+                    $response = $guard->validate($response);
+                } catch (GuardrailException $e) {
+                    if ($this->tracer) {
+                        ($this->tracer)([
+                            'turn' => $turn + 1,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                    throw $e;
+                }
             }
 
             if ($this->tracer) {
