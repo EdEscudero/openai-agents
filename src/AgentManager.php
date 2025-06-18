@@ -22,12 +22,12 @@ class AgentManager
     /**
      * Create a new agent instance.
      */
-    public function agent(array $options = []): Agent
+    public function agent(array $options = [], ?string $systemPrompt = null): Agent
     {
         $options = array_replace_recursive($this->config['default'] ?? [], $options);
 
         $client = OpenAIClient::factory()->withApiKey($this->config['api_key'])->make();
 
-        return new Agent($client, $options);
+        return new Agent($client, $options, $systemPrompt);
     }
 }
