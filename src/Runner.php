@@ -170,6 +170,17 @@ class Runner
         });
     }
 
+    /**
+     * Run the agent and yield streamed output chunks.
+     *
+     * @return iterable<int, string>
+     */
+    public function runStreamed(string $message): iterable
+    {
+        $toolDefs = array_values(array_filter($this->tools, fn($t) => !empty($t['schema'])));
+        yield from $this->agent->chatStreamed($message, $toolDefs, $this->outputType);
+    }
+
     protected function outputMatches(string $content): bool
     {
         $data = json_decode($content, true);

@@ -3,10 +3,12 @@
 namespace OpenAI\Contracts {
     interface ChatContract {
         public function create(array $parameters);
+        public function createStreamed(array $parameters);
     }
 
     interface AudioContract {
         public function speech(array $parameters);
+        public function transcribe(array $parameters);
     }
 
     interface ClientContract {
@@ -25,4 +27,5 @@ namespace {
     require_once __DIR__ . '/../src/Guardrails/InputGuardrail.php';
     require_once __DIR__ . '/../src/Guardrails/OutputGuardrail.php';
     require_once __DIR__ . '/../src/Tracing/Tracing.php';
+    require_once __DIR__ . '/../src/VoicePipeline.php';
 }

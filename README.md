@@ -116,6 +116,24 @@ $fiber->start();
 $result = $fiber->getReturn();
 ```
 
+You can also stream results as they're generated:
+
+```php
+foreach ($runner->runStreamed('Hello') as $chunk) {
+    echo $chunk;
+}
+```
+
+### Voice pipeline
+
+Use the `VoicePipeline` class to handle audio transcription and text-to-speech in one step:
+
+```php
+$pipeline = new VoicePipeline($client, $agent);
+$audio = $pipeline->run('input.wav');
+file_put_contents('reply.mp3', $audio);
+```
+
 ### Tracing
 
 The package includes a simple tracing system that lets you observe each turn
