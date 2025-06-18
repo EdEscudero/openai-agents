@@ -12,20 +12,31 @@ class Runner
     protected Agent $agent;
     protected int $maxTurns;
     protected array $tools = [];
+    protected $outputType = null;
     protected array $inputGuardrails = [];
     protected array $outputGuardrails = [];
     protected ?Tracing $tracer = null;
 
-    public function __construct(Agent $agent, int $maxTurns = 5, ?Tracing $tracer = null)
+    public function __construct(Agent $agent, int $maxTurns = 5, ?Tracing $tracer = null, $outputType = null)
     {
         $this->agent = $agent;
         $this->maxTurns = $maxTurns;
         $this->tracer = $tracer;
+        $this->outputType = $outputType;
     }
 
     public function registerTool(string $name, callable $callback): void
     {
-        $this->tools[$name] = $callback;
+        $this->registerFunctionTool($name, $callback, []);
+    }
+
+    public function registerFunctionTool(string $name, callable $fn, array $schema): void
+    {
+        $this->tools[$name] = [
+            'callback' => $fn,
+            'schema' => $schema,
+            'name' => $name,
+        ];
     }
 
     public function addInputGuardrail(InputGuardrail $guard): void
@@ -57,7 +68,8 @@ class Runner
                 }
             }
 
-            $response = $this->agent->chat($input);
+            $toolDefs = array_values(array_filter($this->tools, fn($t) => !empty($t['schema'])));
+            $response = $this->agent->chat($input, $toolDefs, $this->outputType);
 
             foreach ($this->outputGuardrails as $guard) {
                 try {
@@ -81,7 +93,13 @@ class Runner
                 $name = $m[1];
                 $arg = $m[2] ?? '';
                 if (isset($this->tools[$name])) {
-                    $input = ($this->tools[$name])($arg);
+                    $tool = $this->tools[$name];
+                    $args = $arg;
+                    if (!empty($tool['schema'])) {
+                        $decoded = json_decode($arg, true);
+                        $args = $decoded ?? $arg;
+                    }
+                    $input = ($tool['callback'])($args);
                     $turn++;
                     continue;
                 }
@@ -95,10 +113,35 @@ class Runner
                 continue;
             }
 
+            if ($this->outputType !== null && !$this->outputMatches($response)) {
+                $input = '';
+                $turn++;
+                continue;
+            }
+
             break;
         }
 
         $this->tracer?->endSpan($spanId);
+        if ($this->outputType !== null && $this->outputMatches($response)) {
+            return json_decode($response, true);
+        }
         return $response;
+    }
+
+    protected function outputMatches(string $content): bool
+    {
+        $data = json_decode($content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+        if (is_array($this->outputType) && isset($this->outputType['required'])) {
+            foreach ($this->outputType['required'] as $key) {
+                if (!array_key_exists($key, $data)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
