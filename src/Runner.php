@@ -2,18 +2,23 @@
 
 namespace OpenAI\LaravelAgents;
 
+use OpenAI\LaravelAgents\Guardrails\GuardrailException;
+use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
+use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
+use OpenAI\LaravelAgents\Tracing\Tracing;
+
 class Runner
 {
     protected Agent $agent;
     protected int $maxTurns;
     protected array $tools = [];
     protected array $functionTools = [];
-    protected array $inputGuards = [];
-    protected array $outputGuards = [];
+    protected array $inputGuardrails = [];
+    protected array $outputGuardrails = [];
+    protected ?Tracing $tracer = null;
     protected $outputType = null;
-    protected $tracer;
 
-    public function __construct(Agent $agent, int $maxTurns = 5, ?callable $tracer = null, $outputType = null)
+    public function __construct(Agent $agent, int $maxTurns = 5, ?Tracing $tracer = null, $outputType = null)
     {
         $this->agent = $agent;
         $this->maxTurns = $maxTurns;
@@ -40,41 +45,56 @@ class Runner
         ];
     }
 
-    public function addInputGuard(callable $guard): void
+    public function addInputGuardrail(InputGuardrail $guard): void
     {
-        $this->inputGuards[] = $guard;
+        $this->inputGuardrails[] = $guard;
     }
 
-    public function addOutputGuard(callable $guard): void
+    public function addOutputGuardrail(OutputGuardrail $guard): void
     {
-        $this->outputGuards[] = $guard;
+        $this->outputGuardrails[] = $guard;
     }
 
     public function run(string $message)
     {
+        $spanId = $this->tracer?->startSpan('runner', ['max_turns' => $this->maxTurns]);
         $turn = 0;
         $input = $message;
         $responseContent = '';
         while ($turn < $this->maxTurns) {
-            foreach ($this->inputGuards as $guard) {
-                $input = $guard($input);
+            foreach ($this->inputGuardrails as $guard) {
+                try {
+                    $input = $guard->validate($input);
+                } catch (GuardrailException $e) {
+                    $this->tracer?->recordEvent($spanId, [
+                        'turn' => $turn + 1,
+                        'error' => $e->getMessage(),
+                    ]);
+                    throw $e;
+                }
             }
 
             $toolDefs = array_map(fn($t) => $t['schema'], $this->functionTools);
             $response = $this->agent->chat($input, $toolDefs);
             $responseContent = $response['content'] ?? '';
 
-            foreach ($this->outputGuards as $guard) {
-                $responseContent = $guard($responseContent);
+            foreach ($this->outputGuardrails as $guard) {
+                try {
+                    $responseContent = $guard->validate($responseContent);
+                } catch (GuardrailException $e) {
+                    $this->tracer?->recordEvent($spanId, [
+                        'turn' => $turn + 1,
+                        'error' => $e->getMessage(),
+                    ]);
+                    throw $e;
+                }
             }
 
-            if ($this->tracer) {
-                ($this->tracer)([
-                    'turn' => $turn + 1,
-                    'input' => $input,
-                    'output' => $responseContent,
-                ]);
-            }
+            $this->tracer?->recordEvent($spanId, [
+                'turn' => $turn + 1,
+                'input' => $input,
+                'output' => $responseContent,
+            ]);
 
             if (isset($response['tool_calls'])) {
                 $toolCall = $response['tool_calls'][0];
@@ -117,6 +137,7 @@ class Runner
             $turn++;
         }
 
+        $this->tracer?->endSpan($spanId);
         return $responseContent;
     }
 }

@@ -13,4 +13,10 @@ namespace OpenAI\Contracts {
 namespace {
     require_once __DIR__ . '/../src/Agent.php';
     require_once __DIR__ . '/../src/Runner.php';
+    require_once __DIR__ . '/../src/Guardrails/GuardrailException.php';
+    require_once __DIR__ . '/../src/Guardrails/InputGuardrailException.php';
+    require_once __DIR__ . '/../src/Guardrails/OutputGuardrailException.php';
+    require_once __DIR__ . '/../src/Guardrails/InputGuardrail.php';
+    require_once __DIR__ . '/../src/Guardrails/OutputGuardrail.php';
+    require_once __DIR__ . '/../src/Tracing/Tracing.php';
 }
