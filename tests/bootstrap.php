@@ -18,4 +18,5 @@ namespace {
     require_once __DIR__ . '/../src/Guardrails/OutputGuardrailException.php';
     require_once __DIR__ . '/../src/Guardrails/InputGuardrail.php';
     require_once __DIR__ . '/../src/Guardrails/OutputGuardrail.php';
+    require_once __DIR__ . '/../src/Tracing/Tracing.php';
 }

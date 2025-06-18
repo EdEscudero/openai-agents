@@ -17,4 +17,11 @@ return [
         'temperature' => env('OPENAI_TEMPERATURE', 0.7),
         'top_p' => env('OPENAI_TOP_P', 1.0),
     ],
+
+    'tracing' => [
+        'enabled' => env('AGENTS_TRACING', false),
+        'processors' => [
+            // callable list of trace processors
+        ],
+    ],
 ];
