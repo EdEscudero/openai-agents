@@ -2,6 +2,7 @@
 
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\ChatContract;
+use OpenAI\Contracts\AudioContract;
 use OpenAI\LaravelAgents\Agent;
 use PHPUnit\Framework\TestCase;
 
@@ -33,5 +34,26 @@ class AgentChatTest extends TestCase
         $reply = $agent->chat('Hello');
 
         $this->assertSame('Hi there', $reply);
+    }
+
+    public function test_speak_calls_audio_api()
+    {
+        $audioMock = $this->createMock(AudioContract::class);
+        $audioMock->expects($this->once())
+            ->method('speech')
+            ->with($this->callback(fn(array $p) => $p['input'] === 'Hello'))
+            ->willReturn('audio-data');
+
+        $clientMock = $this->createMock(ClientContract::class);
+        $clientMock->method('chat')->willReturn($this->createMock(ChatContract::class));
+        $clientMock->expects($this->once())
+            ->method('audio')
+            ->willReturn($audioMock);
+
+        $agent = new Agent($clientMock);
+
+        $result = $agent->speak('Hello');
+
+        $this->assertSame('audio-data', $result);
     }
 }

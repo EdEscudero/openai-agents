@@ -3,6 +3,7 @@
 namespace OpenAI\LaravelAgents;
 
 use OpenAI\Contracts\ClientContract;
+use OpenAI\Contracts\AudioContract;
 
 class Agent
 {
@@ -85,5 +86,22 @@ class Agent
         }
 
         return $reply;
+    }
+
+    /**
+     * Convert the provided text to speech using OpenAI's API.
+     */
+    public function speak(string $text, array $options = []): string
+    {
+        $params = [
+            'model' => $options['model'] ?? 'tts-1',
+            'voice' => $options['voice'] ?? 'alloy',
+            'input' => $text,
+            'response_format' => $options['response_format'] ?? 'mp3',
+        ];
+
+        $response = $this->client->audio()->speech($params);
+
+        return $response;
     }
 }
