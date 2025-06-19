@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAI\LaravelAgents\Tracing;
+namespace Aerobit\OpenaiAgents\Tracing;
 
 use Symfony\Component\HttpClient\HttpClient;
 

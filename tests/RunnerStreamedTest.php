@@ -2,8 +2,8 @@
 
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\ChatContract;
-use OpenAI\LaravelAgents\Agent;
-use OpenAI\LaravelAgents\Runner;
+use Aerobit\OpenaiAgents\Agent;
+use Aerobit\OpenaiAgents\Runner;
 use PHPUnit\Framework\TestCase;
 
 class RunnerStreamedTest extends TestCase

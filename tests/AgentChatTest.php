@@ -3,7 +3,7 @@
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\ChatContract;
 use OpenAI\Contracts\AudioContract;
-use OpenAI\LaravelAgents\Agent;
+use Aerobit\OpenaiAgents\Agent;
 use PHPUnit\Framework\TestCase;
 
 class AgentChatTest extends TestCase

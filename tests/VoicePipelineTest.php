@@ -3,8 +3,8 @@
 use OpenAI\Contracts\AudioContract;
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\ChatContract;
-use OpenAI\LaravelAgents\Agent;
-use OpenAI\LaravelAgents\VoicePipeline;
+use Aerobit\OpenaiAgents\Agent;
+use Aerobit\OpenaiAgents\VoicePipeline;
 use PHPUnit\Framework\TestCase;
 
 class VoicePipelineTest extends TestCase

@@ -6,13 +6,13 @@ This package provides a lightweight integration of the [OpenAI PHP client](https
 ## Installation
 
 ```bash
-composer require aerobit/laravel-openai-agents
+composer require aerobit/openai-agents
 ```
 
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag=config --provider="OpenAI\\LaravelAgents\\AgentServiceProvider"
+php artisan vendor:publish --tag=config --provider="Aerobit\\OpenaiAgents\\AgentServiceProvider"
 ```
 
 Set your `OPENAI_API_KEY` in the environment file or edit `config/agents.php`.
@@ -34,7 +34,7 @@ php artisan agent:chat "Hello" --system="You are helpful" --max-turns=3
 You can also resolve the `AgentManager` service from the container to create agents programmatically.
 
 ```php
-use OpenAI\LaravelAgents\AgentManager;
+use Aerobit\OpenaiAgents\AgentManager;
 
 $manager = app(AgentManager::class);
 $response = $manager->agent()->chat('Hello world');
@@ -62,7 +62,7 @@ file_put_contents('output.mp3', $audio);
 You can optionally provide a system prompt when constructing the agent:
 
 ```php
-use OpenAI\LaravelAgents\Agent;
+use Aerobit\OpenaiAgents\Agent;
 use OpenAI\Client as OpenAIClient;
 
 $client = OpenAIClient::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
@@ -74,7 +74,7 @@ agent returns a final response or a turn limit is reached. Tools and basic hando
 can be registered on the runner:
 
 ```php
-use OpenAI\LaravelAgents\Runner;
+use Aerobit\OpenaiAgents\Runner;
 
 $runner = new Runner($agent, maxTurns: 3);
 $runner->registerTool('echo', fn($text) => $text);
@@ -146,7 +146,7 @@ return [
         'enabled' => true,
         'processors' => [
             fn(array $record) => logger()->info('agent trace', $record),
-            new \OpenAI\LaravelAgents\Tracing\HttpProcessor('https://example.com/trace'),
+            new \Aerobit\OpenaiAgents\Tracing\HttpProcessor('https://example.com/trace'),
         ],
     ],
 ];
@@ -161,9 +161,9 @@ Guardrails let you validate input and output during a run. They can transform
 the content or throw an exception to stop execution.
 
 ```php
-use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
-use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
-use OpenAI\LaravelAgents\Guardrails\OutputGuardrailException;
+use Aerobit\OpenaiAgents\Guardrails\InputGuardrail;
+use Aerobit\OpenaiAgents\Guardrails\OutputGuardrail;
+use Aerobit\OpenaiAgents\Guardrails\OutputGuardrailException;
 
 $runner->addInputGuardrail(new class extends InputGuardrail {
     public function validate(string $content): string

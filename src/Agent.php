@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAI\LaravelAgents;
+namespace Aerobit\OpenaiAgents;
 
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\AudioContract;

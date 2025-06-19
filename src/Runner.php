@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAI\LaravelAgents;
+namespace Aerobit\OpenaiAgents;
 
-use OpenAI\LaravelAgents\Guardrails\GuardrailException;
-use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
-use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
-use OpenAI\LaravelAgents\Tracing\Tracing;
+use Aerobit\OpenaiAgents\Guardrails\GuardrailException;
+use Aerobit\OpenaiAgents\Guardrails\InputGuardrail;
+use Aerobit\OpenaiAgents\Guardrails\OutputGuardrail;
+use Aerobit\OpenaiAgents\Tracing\Tracing;
 
 class Runner
 {

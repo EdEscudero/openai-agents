@@ -2,12 +2,12 @@
 
 use OpenAI\Contracts\ChatContract;
 use OpenAI\Contracts\ClientContract;
-use OpenAI\LaravelAgents\Agent;
-use OpenAI\LaravelAgents\Runner;
-use OpenAI\LaravelAgents\Guardrails\InputGuardrail;
-use OpenAI\LaravelAgents\Guardrails\OutputGuardrail;
-use OpenAI\LaravelAgents\Guardrails\OutputGuardrailException;
-use OpenAI\LaravelAgents\Guardrails\InputGuardrailException;
+use Aerobit\OpenaiAgents\Agent;
+use Aerobit\OpenaiAgents\Runner;
+use Aerobit\OpenaiAgents\Guardrails\InputGuardrail;
+use Aerobit\OpenaiAgents\Guardrails\OutputGuardrail;
+use Aerobit\OpenaiAgents\Guardrails\OutputGuardrailException;
+use Aerobit\OpenaiAgents\Guardrails\InputGuardrailException;
 use PHPUnit\Framework\TestCase;
 
 class GuardrailTest extends TestCase

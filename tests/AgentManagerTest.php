@@ -14,7 +14,7 @@ namespace {
 use OpenAI\Contracts\ChatContract;
 use OpenAI\Contracts\AudioContract;
 use OpenAI\Contracts\ClientContract;
-use OpenAI\LaravelAgents\AgentManager;
+use Aerobit\OpenaiAgents\AgentManager;
 use PHPUnit\Framework\TestCase;
 
 class AgentManagerTest extends TestCase
