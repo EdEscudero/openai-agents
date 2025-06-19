@@ -24,7 +24,8 @@
     },
     "authors": [
         {
-            "name": "OpenAI"
+            "name": "Edgar Escudero"
+            "company": "aerobit.com"
         }
     ],
     "scripts": {
