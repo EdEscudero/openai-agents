@@ -6,7 +6,7 @@ This package provides a lightweight integration of the [OpenAI PHP client](https
 ## Installation
 
 ```bash
-composer require openai/laravel-agents
+composer require aerobit/laravel-openai-agents
 ```
 
 Publish the configuration file:
