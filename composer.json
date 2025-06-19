@@ -1,6 +1,6 @@
 {
     "name": "aerobit/laravel-openai-agents",
-    "description": "OpenAI Agents SDK for Laravel",
+    "description": "Laravel OpenAI Agents SDK",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -25,7 +25,7 @@
     "authors": [
         {
             "name": "Edgar Escudero",
-            "company": "aerobit.com"
+            "email": "edgar@aerobit.com"
         }
     ],
     "scripts": {
