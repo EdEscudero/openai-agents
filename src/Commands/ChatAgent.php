@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAI\LaravelAgents\Commands;
+namespace Aerobit\OpenaiAgents\Commands;
 
 use Illuminate\Console\Command;
-use OpenAI\LaravelAgents\AgentManager;
+use Aerobit\OpenaiAgents\AgentManager;
 
 class ChatAgent extends Command
 {
@@ -33,7 +33,7 @@ class ChatAgent extends Command
             };
         }
 
-        $runner = new \OpenAI\LaravelAgents\Runner($agent, $max, $tracer);
+        $runner = new \Aerobit\OpenaiAgents\Runner($agent, $max, $tracer);
 
         $response = $runner->run($message);
 

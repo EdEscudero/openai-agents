@@ -15,7 +15,7 @@
 <body>
     <h1>OpenAI Agents para Laravel</h1>
     <p>
-        Esta página explica los conceptos teóricos, la implementación en código y diversos casos de uso del paquete <code>aerobit/laravel-openai-agents</code>.
+        Esta página explica los conceptos teóricos, la implementación en código y diversos casos de uso del paquete <code>aerobit/openai-agents</code>.
     </p>
 
     <h2>Conceptos teóricos</h2>
@@ -36,12 +36,12 @@
 
     <h2>Instalación</h2>
     <p>Para instalar el paquete, ejecute:</p>
-    <pre><code>composer require aerobit/laravel-openai-agents
-php artisan vendor:publish --tag=config --provider="OpenAI\LaravelAgents\AgentServiceProvider"</code></pre>
+    <pre><code>composer require aerobit/openai-agents
+php artisan vendor:publish --tag=config --provider="Aerobit\OpenaiAgents\AgentServiceProvider"</code></pre>
 
     <h2>Ejemplo básico de uso</h2>
     <pre><code>&lt;?php
-use OpenAI\LaravelAgents\AgentManager;
+use Aerobit\OpenaiAgents\AgentManager;
 
 $manager = app(AgentManager::class);
 $reply = $manager-&gt;agent()-&gt;chat('Hola mundo');

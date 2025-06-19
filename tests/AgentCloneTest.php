@@ -2,7 +2,7 @@
 
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Contracts\ChatContract;
-use OpenAI\LaravelAgents\Agent;
+use Aerobit\OpenaiAgents\Agent;
 use PHPUnit\Framework\TestCase;
 
 class AgentCloneTest extends TestCase

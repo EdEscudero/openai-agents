@@ -1,5 +1,5 @@
 {
-    "name": "aerobit/laravel-openai-agents",
+    "name": "aerobit/openai-agents",
     "description": "Laravel OpenAI Agents SDK",
     "type": "library",
     "license": "MIT",
@@ -12,13 +12,13 @@
     },
     "autoload": {
         "psr-4": {
-            "OpenAI\\LaravelAgents\\": "src/"
+            "Aerobit\\OpenaiAgents\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "OpenAI\\LaravelAgents\\AgentServiceProvider"
+                "Aerobit\\OpenaiAgents\\AgentServiceProvider"
             ]
         }
     },

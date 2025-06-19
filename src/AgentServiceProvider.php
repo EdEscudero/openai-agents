@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAI\LaravelAgents;
+namespace Aerobit\OpenaiAgents;
 
 use Illuminate\Support\ServiceProvider;
-use OpenAI\LaravelAgents\Tracing\Tracing;
+use Aerobit\OpenaiAgents\Tracing\Tracing;
 
 class AgentServiceProvider extends ServiceProvider
 {
