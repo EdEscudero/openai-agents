@@ -1,5 +1,5 @@
 {
-    "name": "openai/laravel-agents",
+    "name": "aerobit/laravel-openai-agents",
     "description": "OpenAI Agents SDK for Laravel",
     "type": "library",
     "license": "MIT",
