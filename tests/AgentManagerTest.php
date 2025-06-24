@@ -1,7 +1,7 @@
 <?php
 
 namespace OpenAI {
-    class Client {
+    class OpenAI {
         public static $factory;
         public static function factory() {
             return static::$factory;
@@ -38,7 +38,7 @@ class AgentManagerTest extends TestCase
             public function audio(): AudioContract { throw new \Exception('audio'); }
         };
 
-        \OpenAI\Client::$factory = new class($client) {
+        \OpenAI\OpenAI::$factory = new class($client) {
             private $client;
             public function __construct($client) { $this->client = $client; }
             public function withApiKey($key) { return $this; }
@@ -80,7 +80,7 @@ class AgentManagerTest extends TestCase
             public function audio(): AudioContract { throw new \Exception('audio'); }
         };
 
-        \OpenAI\Client::$factory = new class($client) {
+        \OpenAI\OpenAI::$factory = new class($client) {
             private $client;
             public function __construct($client) { $this->client = $client; }
             public function withApiKey($key) { return $this; }
