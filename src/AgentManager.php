@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Aerobit\OpenaiAgents;
 
-use OpenAI\Client as OpenAIClient;
+use OpenAI\OpenAI;
 
 class AgentManager
 {
@@ -27,7 +27,7 @@ class AgentManager
     {
         $options = array_replace_recursive($this->config['default'] ?? [], $options);
 
-        $client = OpenAIClient::factory()->withApiKey($this->config['api_key'])->make();
+        $client = OpenAI::factory()->withApiKey($this->config['api_key'])->make();
 
         return new Agent($client, $options, $systemPrompt);
     }

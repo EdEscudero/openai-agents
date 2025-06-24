@@ -63,9 +63,9 @@ You can optionally provide a system prompt when constructing the agent:
 
 ```php
 use Aerobit\OpenaiAgents\Agent;
-use OpenAI\Client as OpenAIClient;
+use OpenAI\OpenAI;
 
-$client = OpenAIClient::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
+$client = OpenAI::factory()->withApiKey(env('OPENAI_API_KEY'))->make();
 $agent = new Agent($client, [], 'You are a helpful assistant.');
 ```
 
